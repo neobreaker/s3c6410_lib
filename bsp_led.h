@@ -1,6 +1,7 @@
 #ifndef __BSP_LED_H__
 #define __BSP_LED_H__
 
+#include "s3c6410/s3c6410_gpio.h"
 
 typedef enum
 {
@@ -25,10 +26,6 @@ typedef enum
 #define GPKDAT6_MSK        (0x1<<6)
 #define GPKDAT7_MSK        (0x1<<7)
 
-
-// ÅäÖÃÒý½Å
-#define GPKCON0 		   (*(volatile unsigned long *)0x7F008800)
-#define GPKDAT			   (*(volatile unsigned long *)0x7F008808)
 
 void bsp_led_init(void);
 

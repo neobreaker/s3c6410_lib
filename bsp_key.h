@@ -1,6 +1,8 @@
 #ifndef __BSP_KEY_H__
 #define __BSP_key_H__
 
+#include "s3c6410/s3c6410_gpio.h"
+
 #define GPNCON0_MSK        (0xf<0)
 #define GPNCON1_MSK        (0xf<4)
 #define GPNCON2_MSK        (0xf<8)
@@ -15,9 +17,6 @@
 #define GPNDAT1_MSK        (0x1<<5)
 #define GPNDAT2_MSK        (0x1<<6)
 #define GPNDAT3_MSK        (0x1<<7)
-
-#define GPNCON0 		   (*(volatile unsigned long *)0x7F008830)
-#define GPNDAT			   (*(volatile unsigned long *)0x7F008834)
 
 typedef enum
 {

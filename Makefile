@@ -1,13 +1,34 @@
-nand.bin : start.o bsp_clock.o bsp_sdram.o main.o bsp_nand.o bsp_led.o bsp_key.o
-	arm-linux-ld  -T nand.lds -o a.elf $^
-	arm-linux-objcopy -O binary a.elf a.bin
-	arm-linux-objdump -D a.elf > a.dis
+CC      = arm-linux-gcc
+LD      = arm-linux-ld
+AR      = arm-linux-ar
+OBJCOPY = arm-linux-objcopy
+OBJDUMP = arm-linux-objdump
 
-%.o : %.S
-	arm-linux-gcc -g -c -O2 -o $@ $^
+INCLUDEDIR 	:= $(shell pwd)/include $(shell pwd)/s3c6410
+CFLAGS 		:= -Wall -Os -fno-builtin-printf 
+CPPFLAGS   	:= -nostdinc -I$(INCLUDEDIR)
 
-%.o : %.c
-	arm-linux-gcc -g -c -O2 -o $@ $^ -fno-builtin 
+export 	CC AR LD OBJCOPY OBJDUMP INCLUDEDIR CFLAGS CPPFLAGS 
+
+objs := start.o bsp_clock.o bsp_sdram.o main.o bsp_nand.o bsp_led.o bsp_key.o
+
+a.bin: $(objs)
+	${LD} -Tnand.lds -o a.elf $^
+	${OBJCOPY} -O binary -S a.elf $@
+	${OBJDUMP} -D a.elf > a.dis
+
+.PHONY : lib/libc.a
+lib/libc.a:
+	cd lib; make; cd ..
+	
+%.o:%.c
+	${CC} $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+
+%.o:%.S
+	${CC} $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f *.o *.bin *.elf *.dis	
+	rm -f a.bin a.elf a.dis *.o
+	
+
+
