@@ -4,7 +4,6 @@ SECTIONS
     .text : 
     { 
         start.o 
-        bsp_clock.o
         bsp_sdram.o
         * (.text)
     } 

@@ -1,6 +1,6 @@
 #include "bsp_led.h"
 #include "bsp_key.h"
-
+#include "bsp_lcd.h"
 // 延时
 void delay()
 {
@@ -12,6 +12,7 @@ void bsp_init()
 {
 	bsp_led_init();
 	bsp_key_init();
+	bsp_lcd_init();
 }
 
 void test_led()
@@ -45,9 +46,9 @@ void test_key()
 	{
 
 		if(GPNDAT & (1<<0))				// KEY1被按下，则LED1亮，否则LED1灭
-			bsp_led_on(LED_1);
+			lcd_clear_screen(0xFFFFFF);
 		else
-			bsp_led_off(LED_1);
+			lcd_draw_circle();
 
 		if(GPNDAT & (1<<1))				// KEY2被按下，则LED2亮，否则LED2灭
 			bsp_led_on(LED_2);
@@ -69,7 +70,6 @@ void test_key()
 
 int main()
 {
-	int dat = 0;
 	
 	bsp_init();
 
@@ -80,6 +80,7 @@ int main()
 	
 //	test_led();
 	test_key();
+	
 	
 	return 0;
 }

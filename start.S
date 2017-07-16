@@ -3,6 +3,18 @@
 
 _start:
 
+	/* 0 地址 */
+	b reset                 /* 复位时,cpu跳到0地址 */
+	b halt     @ldr pc, =undefined_instruction  /* cpu遇到不能识别的指令时 */
+	b halt     @ldr pc, _vector_swi             /* 当执行swi指令时, 进入swi模 式 */
+	b halt     @ldr	pc, _prefetch_abort /* 预取中止异常 */
+	b halt     @ldr	pc, _data_abort     /* 数据访问异常 */
+	b halt     @ldr	pc, _not_used       /* 没用到 */
+	b halt     @ldr	pc, _irq            /* 0x18 中断异常 */
+	b halt     @ldr	pc, _fiq            /* 快中断异常 */
+
+reset:
+
 	// 把外设的基地址告诉CPU
 	ldr r0, =0x70000000 					
 	orr r0, r0, #0x13					
@@ -14,7 +26,7 @@ _start:
 	str r1, [r0] 
 	
 	// 设置栈
-	ldr sp, =0x0C002000
+	ldr sp, =1024*8
 	
 	// 开启icaches
 #ifdef  CONFIG_SYS_ICACHE_OFF
@@ -25,7 +37,8 @@ _start:
 	mcr p15, 0, r0, c1, c0, 0
 
 	// 设置时钟
-	bl bsp_clock_init
+	//bl bsp_clock_init
+	bl asm_clock_init
 	
 	// 初始化sdram
 	bl bsp_sdram_init
@@ -58,6 +71,7 @@ clean_loop:
 
 	// 跳转
 on_ddr:
+	ldr sp, =0x57000000
 	ldr pc, =main
 	
 halt:

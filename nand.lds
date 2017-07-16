@@ -3,11 +3,7 @@ SECTIONS {
     
 	.text : {
 			start.o
-			bsp_clock.o
-			bsp_sdram.o
-			bsp_nand.o
-			bsp_key.o
-			bsp_led.o
+			bsp_lcd.o
 			* (.text)
 	}
 

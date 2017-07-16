@@ -84,6 +84,8 @@ int bsp_sdram_init( void )
 	/* 4. 使dramc进入"ready"状态	*/
 	set_val( P1MEMCCMD, 0x000 );
 	while( !(( read_val( P1MEMSTAT ) & 0x3 ) == 0x1));// 等待dramc进入"ready"状态		
+
+	return 0;
 }
 
 

@@ -4,13 +4,14 @@ AR      = arm-linux-ar
 OBJCOPY = arm-linux-objcopy
 OBJDUMP = arm-linux-objdump
 
-INCLUDEDIR 	:= $(shell pwd)/include $(shell pwd)/s3c6410
+INCLUDEDIR 	:= $(shell pwd)/include
+S3C63XXDIR 	:= $(shell pwd)/s3c6410
 CFLAGS 		:= -Wall -Os -fno-builtin-printf 
-CPPFLAGS   	:= -nostdinc -I$(INCLUDEDIR)
+CPPFLAGS   	:= -nostdinc -I$(INCLUDEDIR) -I$(S3C63XXDIR)
 
 export 	CC AR LD OBJCOPY OBJDUMP INCLUDEDIR CFLAGS CPPFLAGS 
 
-objs := start.o bsp_clock.o bsp_sdram.o main.o bsp_nand.o bsp_led.o bsp_key.o
+objs := start.o asm_clock.o bsp_sdram.o main.o bsp_nand.o bsp_led.o bsp_key.o bsp_lcd.o
 
 a.bin: $(objs)
 	${LD} -Tnand.lds -o a.elf $^
