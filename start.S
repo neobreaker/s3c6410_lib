@@ -15,30 +15,41 @@ _start:
 
 reset:
 
-	// 把外设的基地址告诉CPU
-	ldr r0, =0x70000000 					
-	orr r0, r0, #0x13					
-	mcr p15,0,r0,c15,c2,4				
+		/*
+	 * set the cpu to SVC32 mode
+	 */
+	mrs	r0,cpsr
+	bic	r0,r0,#0x1f
+	orr	r0,r0,#0xd3
+	msr	cpsr,r0
 	
-	// 关看门狗
-	ldr r0, =0x7E004000
-	mov r1, #0
-	str r1, [r0] 
-	
-	// 设置栈
-	ldr sp, =1024*8
-	
-	// 开启icaches
-#ifdef  CONFIG_SYS_ICACHE_OFF
-	bic r0, r0, #0x00001000 				@ clear bit 12 (I) I-cache
-#else
-	orr r0, r0, #0x00001000 				@ set bit 12 (I) I-cache
-#endif
-	mcr p15, 0, r0, c1, c0, 0
+cpu_init_crit:
+	/*
+	 * flush v4 I/D caches
+	 */
+	mov	r0, #0
+	mcr	p15, 0, r0, c7, c7, 0	/* flush v3/v4 cache */
+	mcr	p15, 0, r0, c8, c7, 0	/* flush v4 TLB */
 
-	// 设置时钟
-	//bl bsp_clock_init
-	bl asm_clock_init
+	/*
+	 * disable MMU stuff and caches
+	 */
+	mrc	p15, 0, r0, c1, c0, 0
+	bic	r0, r0, #0x00002300	@ clear bits 13, 9:8 (--V- --RS)
+	bic	r0, r0, #0x00000087	@ clear bits 7, 2:0 (B--- -CAM)
+	orr	r0, r0, #0x00000002	@ set bit 2 (A) Align
+	orr	r0, r0, #0x00001000	@ set bit 12 (I) I-Cache
+	mcr	p15, 0, r0, c1, c0, 0
+
+	/* Peri port setup */
+	ldr	r0, =0x70000000
+	orr	r0, r0, #0x13
+    mcr	p15,0,r0,c15,c2,4       @ 256M(0x70000000-0x7fffffff)
+
+	/*
+	 * Go setup Memory and board specific bits prior to relocation.
+	 */
+	bl	lowlevel_init	/* go setup pll,mux,memory */
 	
 	// 初始化sdram
 	bl bsp_sdram_init
@@ -53,26 +64,26 @@ reset:
 	sub r2, r2, r1
 	cmp r0,r1
 	beq clean_bss
-	bl copy2ddr					
-	cmp r0, #0
-	bne halt
-		
-	// 清BSS，把BSS段对应的内存清零
-clean_bss:
-	ldr r0, =bss_start
-	ldr r1, =bss_end
-	mov r3, #0
-	cmp r0, r1
-	beq on_ddr
-clean_loop:
-	str r3, [r0], #4
-	cmp r0, r1	
-	bne clean_loop		
+	bl copy2ddr	
+	b  after_copy
 
-	// 跳转
-on_ddr:
-	ldr sp, =0x57000000
-	ldr pc, =main
-	
+after_copy:
+		// 清BSS，把BSS段对应的内存清零
+	clean_bss:
+		ldr r0, =bss_start
+		ldr r1, =bss_end
+		mov r3, #0
+		cmp r0, r1
+		beq stack_setup
+	clean_loop:
+		str r3, [r0], #4
+		cmp r0, r1	
+		bne clean_loop		
+
+		// 跳转
+	stack_setup:
+		ldr sp, =0x57000000
+		ldr pc, =main
+		@ldr	pc, _start_armboot
 halt:
 	b halt	

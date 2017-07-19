@@ -11,7 +11,7 @@ CPPFLAGS   	:= -nostdinc -I$(INCLUDEDIR) -I$(S3C63XXDIR)
 
 export 	CC AR LD OBJCOPY OBJDUMP INCLUDEDIR CFLAGS CPPFLAGS 
 
-objs := start.o asm_clock.o bsp_sdram.o main.o bsp_nand.o bsp_led.o bsp_key.o bsp_lcd.o
+objs := start.o lowlevel_init.o bsp_sdram.o main.o bsp_nand.o bsp_led.o bsp_key.o bsp_lcd.o
 
 a.bin: $(objs)
 	${LD} -Tnand.lds -o a.elf $^

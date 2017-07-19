@@ -3,7 +3,7 @@ SECTIONS {
     
 	.text : {
 			start.o
-			bsp_lcd.o
+			lowlevel_init.o
 			* (.text)
 	}
 
