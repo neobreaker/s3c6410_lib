@@ -1,3 +1,4 @@
+#include "hardware.h"
 #define ELFIN_NAND_BASE		0x70200000
 
 #define NFCONF_OFFSET           0x00
@@ -54,8 +55,8 @@
 #define NFMLC8BITPT0		(ELFIN_NAND_BASE+NFMLC8BITPT0_OFFSET)
 #define NFMLC8BITPT1		(ELFIN_NAND_BASE+NFMLC8BITPT1_OFFSET)
 
-#define __REG(x)				(*(volatile unsigned long *)(x))
-#define __REGb(x)				(*(volatile unsigned char *)(x))
+//#define __REG(x)				(*(volatile unsigned long *)(x))
+//#define __REGb(x)				(*(volatile unsigned char *)(x))
 #define NFCONF_REG				__REG(ELFIN_NAND_BASE+NFCONF_OFFSET)
 #define NFCONT_REG				__REG(ELFIN_NAND_BASE+NFCONT_OFFSET)
 #define NFCMD_REG				__REG(ELFIN_NAND_BASE+NFCMMD_OFFSET)

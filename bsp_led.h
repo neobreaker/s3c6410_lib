@@ -1,7 +1,7 @@
 #ifndef __BSP_LED_H__
 #define __BSP_LED_H__
 
-#include "s3c6410/s3c6410_gpio.h"
+#include "s3c6410/s3c6410.h"
 
 typedef enum
 {

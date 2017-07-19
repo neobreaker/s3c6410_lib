@@ -1,7 +1,7 @@
 #ifndef __BSP_KEY_H__
 #define __BSP_key_H__
 
-#include "s3c6410/s3c6410_gpio.h"
+#include "s3c6410/s3c6410.h"
 
 #define GPNCON0_MSK        (0xf<0)
 #define GPNCON1_MSK        (0xf<4)
