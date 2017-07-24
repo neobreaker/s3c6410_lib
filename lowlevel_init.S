@@ -46,6 +46,9 @@ lowlevel_init:
 	
 	bl clock_asm_init
 
+	// ≥ı ºªØNAND Flash
+	bl nand_asm_init
+	
 @	bl uart_asm_init
 
 @ 	bl nand_asm_init
@@ -135,7 +138,7 @@ others_loop:
 	str r1, [r0]
 
 	mov pc, lr
-	
+
 /*
  * uart_asm_init: Initialize UART in asm mode, 115200bps fixed.
  * void uart_asm_init(void)
@@ -167,12 +170,16 @@ uart_asm_init:
 #endif
 	str	r1, [r0, #UDIVSLOT_OFFSET]
 /*
- * Nand Interface Init for SMDK6400 */
+ * Nand Interface Init for SMDK6400 
 nand_asm_init:
 	ldr	r0, =ELFIN_NAND_BASE
 	ldr	r1, [r0, #NFCONF_OFFSET]
-	orr	r1, r1, #0x70		@set TWRPH1
-	orr	r1, r1, #0x7700	@set TWRPH0 TACLS
+
+
+	ldr r2, =NFCONF_MSK
+	bic r1, r1, r2
+	ldr r2, =NFCONF_CFG
+	orr r1, r1, r2
 	str     r1, [r0, #NFCONF_OFFSET]
 
 	ldr	r1, [r0, #NFCONT_OFFSET]
@@ -180,3 +187,27 @@ nand_asm_init:
 	str     r1, [r0, #NFCONT_OFFSET]
 
 	mov	pc, lr
+*/
+
+nand_asm_init:
+	ldr	r0, =ELFIN_NAND_BASE
+	ldr	r1, [r0, #NFCONF_OFFSET]
+
+#define TWRPH1	 0
+#define TWRPH0	 3
+#define TACLS	 0
+#define NFCONF_CFG	((TACLS<<12)|(TWRPH0<<8)|(TWRPH1<<4))
+#define NFCONF_MSK	((1<<30)|(0x7<<12)|(0x7<<8)|(0x7<<4))
+
+	ldr r2, =NFCONF_MSK
+	bic r1, r1, r2
+	ldr r2, =NFCONF_CFG
+	orr	r1, r1, r2
+	str r2, [r0, #NFCONF_OFFSET]
+
+	ldr	r1, [r0, #NFCONT_OFFSET]
+	orr	r1, r1, #0x03		@set MODE Reg_nCE0
+	str     r1, [r0, #NFCONT_OFFSET]
+
+	mov	pc, lr
+
