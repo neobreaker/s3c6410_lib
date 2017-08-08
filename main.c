@@ -1,6 +1,7 @@
 #include "bsp_led.h"
 #include "bsp_key.h"
 #include "bsp_lcd.h"
+#include "bsp_uart.h"
 // 延时
 void delay()
 {
@@ -10,9 +11,10 @@ void delay()
 
 void bsp_init()
 {
-	bsp_led_init();
+//	bsp_led_init();
 //	bsp_key_init();
 //	bsp_lcd_init();
+	bsp_uart_init();
 }
 
 void test_led()
@@ -68,6 +70,16 @@ void test_key()
 	}
 }
 
+void test_uart()
+{
+	char c;
+	while(1)
+	{
+		c = getchar();
+		putchar(c+1);
+	}
+}
+
 int main()
 {
 	
@@ -78,10 +90,10 @@ int main()
 //	GPKCON0 = 0x11110000;	
 
 	
-	test_led();
+//	test_led();
 //	test_key();
-	
-	
+	test_uart();
+		
 	return 0;
 }
 
